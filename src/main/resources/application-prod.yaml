@@ -1,0 +1,37 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: ${GOOGLE_REDIRECT_URI:https://yeahpeu.site/login/oauth2/code/google}
+
+app:
+  cors:
+    allow-hosts:
+      - https://yeahpeu.site
+      - ${APP_CORS_ALLOW_HOSTS_FRONT:}
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false

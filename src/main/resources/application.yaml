@@ -3,41 +3,9 @@ spring:
     name: yeahpeu-server
   config:
     import:
-      - optional:file:.env[.properties] #ENV 파일 자동 설정
       - classpath:initialEvents.yml
-
-  datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-  ai:
-    openai:
-      api-key: ${AI_OPENAI_API_KEY}
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-name: google
-            client-id: ${SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID}
-            client-secret: ${SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET}
-            redirect-uri: https://yeahpeu.site/login/oauth2/code/google #http://localhost:8080/login/oauth2/code/google#
-            authorization-grant-type: authorization_code
-            scope:
-              - email
-              - profile
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   servlet:
     multipart:
@@ -45,11 +13,29 @@ spring:
       max-request-size: 50MB
       enabled: true
 
+  ai:
+    openai:
+      api-key: ${AI_OPENAI_API_KEY:}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: ${SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID:}
+            client-secret: ${SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET:}
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
+
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${GOOGLE_MAIL_USERNAME}
-    password: ${GOOGLE_MAIL_PASSWORD}
+    username: ${GOOGLE_MAIL_USERNAME:}
+    password: ${GOOGLE_MAIL_PASSWORD:}
     protocol: smtp
     properties:
       mail:
@@ -62,46 +48,31 @@ spring:
 application:
   security:
     jwt:
-      secret-key: ${APPLICATION_SECURITY_JWT_SECRET_KEY}
-      access-token-expiration: ${APPLICATION_SECURITY_JWT_ACCESS_TOKEN_EXPIRATION}
-      refresh-token-expiration: ${APPLICATION_SECURITY_JWT_REFRESH_TOKEN_EXPIRATION}
-
-app:
-  cors:
-    allow-hosts:
-      - https://yeahpeu.site
-      - http://localhost:8082
-      - http://localhost:3000
-      - https://i12a706.p.ssafy.io
-      - ${APP_CORS_ALLOW_HOSTS_FRONT}
-      - ${APP_CORS_ALLOW_HOSTS_LOCAL}
+      secret-key: ${APPLICATION_SECURITY_JWT_SECRET_KEY:}
+      access-token-expiration: ${APPLICATION_SECURITY_JWT_ACCESS_TOKEN_EXPIRATION:3600000}
+      refresh-token-expiration: ${APPLICATION_SECURITY_JWT_REFRESH_TOKEN_EXPIRATION:86400000}
 
 api:
   naver:
-    client-id: ${API_NAVER_CLIENT_ID}
-    client-secret: ${API_NAVER_CLIENT_SECRET}
+    client-id: ${API_NAVER_CLIENT_ID:}
+    client-secret: ${API_NAVER_CLIENT_SECRET:}
 
-cloud:
+app:
   aws:
     s3:
-      bucket: ${AWS_BUCKET_NAME}
-    stack.auto: false
-    region.static: ap-northeast-2
-    credentials:
-      accessKey: ${AWS_ACCESS_KEY}
-      secretKey: ${AWS_SECRET_KEY}
-
-
+      bucket: ${AWS_BUCKET_NAME:}
+    region: ${AWS_REGION:ap-northeast-2}
+    access-key: ${AWS_ACCESS_KEY:}
+    secret-key: ${AWS_SECRET_KEY:}
 
 logging:
   level:
-    org.springframework.messaging.simp: DEBUG
+    org.springframework.messaging.simp: INFO
 
 decorator:
   datasource:
     p6spy:
-      enable-logging: false # 실제 쿼리 확인
-#      enable-logging: true # 실제 쿼리 확인
+      enable-logging: false
 
 server:
   forward-headers-strategy: native

@@ -1,0 +1,31 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:23214/yeahpeu?useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+    username: ${DATASOURCE_USERNAME:user}
+    password: ${DATASOURCE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+app:
+  cors:
+    allow-hosts:
+      - http://localhost:3000
+      - http://localhost:8082
+      - ${APP_CORS_ALLOW_HOSTS_FRONT:}
+      - ${APP_CORS_ALLOW_HOSTS_LOCAL:}
+
+logging:
+  level:
+    org.springframework.messaging.simp: DEBUG

@@ -34,7 +34,7 @@ public class S3Service {
     private final S3Client s3Client;
     private final Tika tika = new Tika();
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${app.aws.s3.bucket}")
     private String bucket;
 
     public FileUploadDTO upload(MultipartFile file) throws IOException {
