@@ -1,3 +1,5 @@
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 INSERT INTO category (id, name, parent_id)
 VALUES (1, '결혼식', NULL),
        (2, '스드메', NULL),
