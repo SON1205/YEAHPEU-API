@@ -1,7 +1,5 @@
 package com.yeahpeu.asset.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.yeahpeu.asset.domain.FileType;
 import com.yeahpeu.common.exception.BadRequestException;
 import java.io.IOException;
@@ -25,12 +23,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @RequiredArgsConstructor
 @Service
 public class S3Service {
 
-    private final AmazonS3Client amazonS3Client;
+    private final S3Client s3Client;
     private final Tika tika = new Tika();
 
     @Value("${cloud.aws.s3.bucket}")
@@ -51,10 +52,11 @@ public class S3Service {
         uploadToS3(file, uniqueFileName, mimeType);
 
         // 5 업로드된 파일 URL 반환
-        return new FileUploadDTO(
-                amazonS3Client.getUrl(bucket, uniqueFileName).toString(),
-                mimeType
-        );
+        String url = s3Client.utilities()
+                .getUrl(b -> b.bucket(bucket).key(uniqueFileName))
+                .toString();
+
+        return new FileUploadDTO(url, mimeType);
     }
 
     private String mapTikaMimeType(String mimeType, String filename) {
@@ -166,12 +168,15 @@ public class S3Service {
     }
 
     private void uploadToS3(MultipartFile file, String fileName, String mimeType) throws IOException {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(mimeType);
-        metadata.setContentLength(file.getSize());
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(fileName)
+                .contentType(mimeType)
+                .contentLength(file.getSize())
+                .build();
 
         try (InputStream fileStream = file.getInputStream()) {
-            amazonS3Client.putObject(bucket, fileName, fileStream, metadata);
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(fileStream, file.getSize()));
         }
     }
 }

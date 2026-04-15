@@ -63,8 +63,8 @@ public class AiChatService {
         String jsonStr = openAiChatModel.call(new Prompt(
                 promptTemplate.create().toString(),
                 OpenAiChatOptions.builder()
-                        .model("gpt-4o")
-                        .temperature(0.9)
+                        .withModel("gpt-4o")
+                        .withTemperature(0.9f)
                         .build()
         )).getResult().getOutput().toString();
         //String jsonStr = openAiChatModel.call(promptTemplate.create()).getResult().getOutput().toString();
